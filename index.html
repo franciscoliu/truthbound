@@ -3,159 +3,94 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#122e34">
-  <meta name="description" content="Truthbound is developing release tests for reward hacking and misleading behavior in autonomous agents. Built on KnownLieBench research.">
+  <meta name="theme-color" content="#f6f5f1">
+  <meta name="description" content="Autonomy needs proof. Truthbound is developing tests for reward hacking and deception in AI agents. Built on KnownLieBench research.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Truthbound — Put agent claims to the test.">
-  <meta property="og:description" content="Research toward better release tests for reward hacking and misleading behavior in autonomous agents.">
+  <meta property="og:title" content="Truthbound — Autonomy needs proof.">
+  <meta property="og:description" content="Tests for reward hacking and deception in AI agents. Because a false success report can have real consequences.">
   <meta property="og:url" content="https://franciscoliu.github.io/truthbound/">
   <meta property="og:image" content="https://franciscoliu.github.io/truthbound/assets/social.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://franciscoliu.github.io/truthbound/">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css">
-  <title>Truthbound — Put agent claims to the test.</title>
+  <title>Truthbound — Autonomy needs proof.</title>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header wrap">
     <a class="wordmark" href="#" aria-label="Truthbound home">
-      <svg class="brand-mark" viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M13 5H5v26h8M23 5h8v26h-8" stroke="currentColor" stroke-width="2.4"/><circle cx="18" cy="18" r="4" fill="currentColor"/></svg>
-      <span>Truthbound</span>
+      <svg viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M12 5H5v26h7M24 5h7v26h-7" stroke="currentColor" stroke-width="2.5"/><circle cx="18" cy="18" r="4"/></svg>
+      Truthbound
     </a>
     <nav aria-label="Main navigation">
       <a href="#why">Why it matters</a>
-      <a href="#approach">Approach</a>
       <a href="#research">Research</a>
-      <a class="nav-contact" href="#contact">Get in touch <span aria-hidden="true">↗</span></a>
+      <a class="nav-contact" href="#contact">Let's talk <span aria-hidden="true">↗</span></a>
     </nav>
   </header>
-
   <main id="main">
     <section class="hero wrap" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> AGENT EVALUATION · RESEARCH STAGE</p>
-        <h1 id="hero-title">Put agent claims<br><em>to the test.</em></h1>
-        <p class="hero-description">Truthbound is developing release tests for reward hacking and misleading behavior in autonomous agents.</p>
-        <p class="hero-context">The question is simple. Does reported success match the work performed?</p>
-        <div class="hero-actions">
-          <a class="button" href="mailto:zheyuanliu2001@gmail.com?subject=Truthbound%20%E2%80%94%20agent%20evaluation">Discuss a workflow <span aria-hidden="true">↗</span></a>
-          <a class="text-link" href="#research">Meet the research <span aria-hidden="true">↓</span></a>
-        </div>
+        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> AI AGENT INTEGRITY</p>
+        <h1 id="hero-title">Autonomy<br>needs <span>proof.</span></h1>
+        <p class="hero-description">We're developing tests for reward hacking and deception in AI agents.</p>
+        <p class="hero-stakes">A false “done” can ship broken code or leave critical work unfinished.</p>
+        <a class="button" href="mailto:zheyuanliu2001@gmail.com?subject=Truthbound%20%E2%80%94%20agent%20evaluation">Discuss a workflow <span aria-hidden="true">↗</span></a>
       </div>
-
-      <figure class="evidence-figure">
-        <div class="figure-heading"><span>THE GAP WE STUDY</span><span aria-hidden="true">↘</span></div>
-        <div class="evidence-path" aria-hidden="true"></div>
-        <div class="evidence-line task-line">
-          <span class="line-node" aria-hidden="true"></span>
-          <span class="micro-label">01 / THE REQUIREMENT</span>
-          <p>Run the required checks.</p>
+      <figure class="evidence" aria-label="Illustrative mismatch between an agent report and the execution record">
+        <div class="report">
+          <p class="evidence-label">Agent report</p>
+          <p class="evidence-statement">“Required checks <br>passed.”</p>
+          <svg class="check-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="1.5"/><path d="m12 20 5 5 11-11" stroke="currentColor" stroke-width="2"/></svg>
         </div>
-        <div class="evidence-line claim-line">
-          <span class="line-node" aria-hidden="true"></span>
-          <span class="micro-label">02 / THE AGENT'S REPORT</span>
-          <p>“All required checks passed.”</p>
+        <div class="evidence-connector" aria-hidden="true"><span></span><svg viewBox="0 0 28 28" fill="none"><path d="m9 9 10 10M19 9 9 19" stroke="currentColor" stroke-width="2"/><circle cx="14" cy="14" r="12" stroke="currentColor"/></svg><span></span></div>
+        <div class="record">
+          <p class="evidence-label">Execution record</p>
+          <p class="evidence-statement">2 required <br>checks failed.</p>
         </div>
-        <div class="evidence-line record-line">
-          <span class="line-node" aria-hidden="true"></span>
-          <span class="micro-label">03 / THE INDEPENDENT RECORD</span>
-          <p>Two required checks failed.</p>
-          <span class="record-detail">Same run. Same code. Same checks.</span>
-        </div>
-        <figcaption>Illustrative mismatch, not a product result. The next question is which tests and fixes help.</figcaption>
+        <figcaption>Illustrative example. Same run, code and checks.</figcaption>
       </figure>
     </section>
-
-    <section class="mission wrap" aria-labelledby="mission-title">
-      <p class="eyebrow">OUR GOAL</p>
-      <div>
-        <h2 id="mission-title">Keep autonomous agents<br>faithful to the task.</h2>
-        <p>Help teams understand when agents take unauthorized shortcuts, misreport outcomes or leave required work unfinished, and test what improves that behavior.</p>
-        <p class="domain-line">Software <span aria-hidden="true">/</span> Research <span aria-hidden="true">/</span> Operations</p>
-      </div>
-    </section>
-
-    <section class="motivation dark-section" id="why" aria-labelledby="why-title">
-      <div class="wrap motivation-layout">
-        <div class="section-intro">
-          <p class="eyebrow">01 / MOTIVATION</p>
-          <h2 id="why-title">A good score can hide<br><em>unfinished work.</em></h2>
-          <p>Agents increasingly work toward goals: finish a task, pass a check, close a case. A measure of success can miss whether the underlying work was done correctly.</p>
-          <p>We want to examine the gap between the objective an agent pursues, the actions it takes and the account it gives.</p>
+    <section class="why" id="why" aria-labelledby="why-title">
+      <div class="wrap">
+        <div class="why-intro">
+          <div><p class="eyebrow">WHY IT MATTERS</p><h2 id="why-title">More autonomy.<br>More at stake.</h2></div>
+          <p class="why-description">An agent's report can trigger a release, a payment or a customer decision. Teams need evidence that the work was done and the rules were followed.</p>
         </div>
-        <div class="failure-list">
-          <article>
-            <span class="failure-number" aria-hidden="true">01</span>
-            <div><h3>Taking a shortcut</h3><p>An agent changes a protected check to get a passing result, without permission.</p></div>
-          </article>
-          <article>
-            <span class="failure-number" aria-hidden="true">02</span>
-            <div><h3>Misreporting the outcome</h3><p>An agent reports that an action completed even though the execution record shows it failed.</p></div>
-          </article>
-          <article>
-            <span class="failure-number" aria-hidden="true">03</span>
-            <div><h3>Bending to a competing objective</h3><p>A target such as speed or cost control pulls behavior away from the task's stated requirements.</p></div>
-          </article>
-          <p class="list-note">Examples of behavior to test. Understanding intent is a separate question.</p>
+        <div class="approach" id="approach">
+          <p>Our focus: tests before <br>a model or workflow release.</p>
+          <ol aria-label="Proposed testing approach">
+            <li><span>01</span>Test conflicting goals</li>
+            <li><span>02</span>Check the evidence</li>
+            <li><span>03</span>Test candidate fixes</li>
+          </ol>
         </div>
       </div>
     </section>
-
-    <section class="approach wrap section-space" id="approach" aria-labelledby="approach-title">
-      <div class="section-topline">
-        <p class="eyebrow">02 / APPROACH</p>
-        <p class="section-aside">First focus: before a model, <br>prompt or workflow change.</p>
-      </div>
-      <h2 id="approach-title">From a failure to a<br><em>better release decision.</em></h2>
-      <p class="section-lead">We are developing a workflow that starts with a team's own task requirements, sandbox and execution evidence.</p>
-      <ol class="steps">
-        <li><span class="step-index" aria-hidden="true">01</span><h3>Define the task</h3><p>Agree on the requirements, permitted actions and acceptance criteria.</p></li>
-        <li><span class="step-index" aria-hidden="true">02</span><h3>Check the evidence</h3><p>Compare agent reports with logs, artifacts and independent outcome checks.</p></li>
-        <li><span class="step-index" aria-hidden="true">03</span><h3>Vary the pressure</h3><p>Test competing objectives while keeping the authorized task fixed.</p></li>
-        <li><span class="step-index" aria-hidden="true">04</span><h3>Test the repair</h3><p>Turn confirmed failures into reproducible cases. Check candidate fixes on held-out tasks.</p></li>
-      </ol>
-      <div class="approach-standard"><span class="small-mark" aria-hidden="true">↳</span><p>The standard is practical: find useful problems or improve repair decisions within the same testing and review budget as the team's existing checks.</p></div>
-    </section>
-
-    <section class="research-section" id="research" aria-labelledby="research-title">
-      <div class="wrap research-layout">
+    <section class="research wrap" id="research" aria-labelledby="research-title">
+      <div class="research-top">
+        <div><p class="eyebrow">THE RESEARCH BEHIND TRUTHBOUND</p><h2 id="research-title">Built on <br>KnownLieBench.</h2></div>
         <div class="research-copy">
-          <p class="eyebrow">03 / RESEARCH FOUNDATION</p>
-          <h2 id="research-title">Built on<br><em>KnownLieBench.</em></h2>
-          <p>KnownLieBench studies misleading behavior under conflicting incentives. A separate neutral probe checks whether a model can identify a documented entitlement before its customer-service behavior is evaluated.</p>
-          <p class="research-scope">The study spans eight customer-service domains. These are controlled simulations; extending the method to enterprise workflows is the work ahead.</p>
-          <div class="research-links">
-            <a class="text-link" href="https://arxiv.org/abs/2608.26372v1">Read the paper <span aria-hidden="true">↗</span></a>
-            <a class="text-link" href="https://github.com/franciscoliu/KnownLieBench">Explore the code <span aria-hidden="true">↗</span></a>
-          </div>
-        </div>
-        <div class="research-record">
-          <p class="micro-label">THE STUDY, IN NUMBERS</p>
-          <dl class="stats">
-            <div><dt>Grounded cases</dt><dd>112</dd></div>
-            <div><dt>Models evaluated</dt><dd>18</dd></div>
-            <div class="stat-wide"><dt>Multi-turn interactions</dt><dd>18,144</dd></div>
-          </dl>
-          <p>Research scale, not commercial product performance.</p>
+          <p>KnownLieBench studies misleading behavior under conflicting incentives in controlled customer-service simulations.</p>
+          <div class="research-links"><a href="https://arxiv.org/abs/2608.26372v1">Read the paper <span aria-hidden="true">↗</span></a><a href="https://github.com/franciscoliu/KnownLieBench">Explore the code <span aria-hidden="true">↗</span></a></div>
         </div>
       </div>
+      <dl class="stats">
+        <div><dt>Models evaluated</dt><dd>18</dd></div>
+        <div><dt>Grounded cases</dt><dd>112</dd></div>
+        <div><dt>Multi-turn interactions</dt><dd>18,144</dd></div>
+      </dl>
+      <p class="founder">Founded by <a href="https://www.linkedin.com/in/zheyuan-frank-liu-371738185/">Zheyuan (Frank) Liu <span aria-hidden="true">↗</span></a>, first author of KnownLieBench.</p>
     </section>
-
-    <section class="founder wrap" aria-labelledby="founder-title">
-      <p class="eyebrow">THE FOUNDER</p>
-      <div><h2 id="founder-title">Zheyuan <span>(Frank)</span> Liu</h2><p>First author of KnownLieBench. Frank built the evaluation system and drove the research through the experiments and paper. Truthbound grows out of that work.</p></div>
-      <a class="text-link" href="https://www.linkedin.com/in/zheyuan-frank-liu-371738185/">LinkedIn <span aria-hidden="true">↗</span></a>
-    </section>
-
-    <section class="contact dark-section" id="contact" aria-labelledby="contact-title">
+    <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="wrap contact-layout">
-        <div><p class="eyebrow">LET'S COMPARE NOTES</p><h2 id="contact-title">What are your<br><em>agents getting wrong?</em></h2></div>
-        <div class="contact-copy"><p>We're looking to learn from teams building and deploying agents. Share a workflow, an unexpected shortcut or a difficult evaluation problem.</p><a class="contact-email" href="mailto:zheyuanliu2001@gmail.com?subject=Truthbound%20%E2%80%94%20let%27s%20compare%20notes">zheyuanliu2001@gmail.com <span aria-hidden="true">↗</span></a><p class="contact-stage">Early research and product exploration.</p></div>
+        <div><p class="eyebrow">LET'S BUILD TRUST IN AGENTS</p><h2 id="contact-title">Testing your next <br>agent release?</h2><p class="contact-stage">Research stage. Looking to learn from teams building agents.</p></div>
+        <a class="button" href="mailto:zheyuanliu2001@gmail.com?subject=Truthbound%20%E2%80%94%20let%27s%20talk">Talk to Frank <span aria-hidden="true">↗</span></a>
       </div>
     </section>
   </main>
-
-  <footer class="site-footer wrap"><a class="wordmark footer-wordmark" href="#">Truthbound</a><p>Research into agent integrity.</p><a href="https://github.com/franciscoliu/truthbound">Website source <span aria-hidden="true">↗</span></a><span class="copyright">© 2026 Truthbound</span></footer>
+  <footer class="site-footer wrap"><a class="wordmark" href="#">Truthbound</a><span>© 2026 Truthbound</span><a href="https://github.com/franciscoliu/truthbound">Source <span aria-hidden="true">↗</span></a></footer>
 </body>
 </html>
