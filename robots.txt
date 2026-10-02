@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://franciscoliu.github.io/truthbound/sitemap.xml
