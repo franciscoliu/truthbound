@@ -37,7 +37,7 @@
         <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> AUTONOMY NEEDS PROOF</p>
         <h1 id="hero-title">Prove your agent<br>follows <span>the policy.</span></h1>
         <p class="hero-description">Truthbound compiles a written policy into an executable check, tests the agent on every branch of it, and enforces it while the agent works.</p>
-        <p class="hero-stakes">In our demo, a low-cost support agent approved a $4,986 refund the policy forbids. The same check stopped it.</p>
+        <p class="hero-stakes">In our demo, a low-cost support agent approved a $4,986 refund the policy forbids. The same check stopped it, and let that cheap model match frontier models on every case.</p>
         <div class="hero-actions">
           <a class="button" href="demo/">See the demo <span aria-hidden="true">↗</span></a>
           <a class="hero-link" href="mailto:zheyuanliu2001@gmail.com?subject=Truthbound%20%E2%80%94%20agent%20evaluation">Talk to Frank <span aria-hidden="true">↗</span></a>
@@ -77,18 +77,19 @@
     </section>
     <section class="preview wrap" id="preview" aria-labelledby="preview-title">
       <div class="preview-top">
-        <div><p class="eyebrow">SEE IT ON A REAL POLICY</p><h2 id="preview-title">Seven outcomes. <br>Before and after.</h2></div>
+        <div><p class="eyebrow">SEE IT ON A REAL POLICY</p><h2 id="preview-title">A $4,986 mistake, <br>caught twice.</h2></div>
         <div class="preview-copy">
-          <p>We compiled an airline cancellation policy, generated a case for each of its seven outcomes, and ran a low-cost support agent with real tools. Every number is a replay of an archived run.</p>
+          <p>We compiled an airline cancellation policy, generated a case for each of its seven outcomes, and ran a low-cost support agent with real tools. It approved a refund the policy forbids. Testing every branch found it; the runtime check stopped it. With the check on, the same cheap model matched GPT-5.5 and Claude Opus 5.5 on every case, at about 2% of their cost.</p>
           <a class="button" href="demo/">Open the demo <span aria-hidden="true">↗</span></a>
         </div>
       </div>
       <dl class="stats">
-        <div><dt>Inputs enumerated → distinct outcomes</dt><dd>240 → 7</dd></div>
-        <div><dt>Same agent, unguarded → guarded</dt><dd>4/7 → 7/7</dd></div>
         <div><dt>Refund blocked at runtime</dt><dd>$4,986</dd></div>
+        <div><dt>Same low-cost model, unguarded → guarded</dt><dd>4/7 → 7/7</dd></div>
+        <div><dt>Of the cost of GPT-5.5 or Claude Opus 5.5, same result</dt><dd>≈2%</dd></div>
+        <div><dt>Inputs enumerated → distinct outcomes</dt><dd>240 → 7</dd></div>
       </dl>
-      <p class="preview-note">GPT-4.1 nano, three runs each way. A demonstration of the mechanism on one policy, not a benchmark.</p>
+      <p class="preview-note">GPT-4.1 nano: three unguarded runs, five guarded runs. Frontier models ran once each. Costs are list prices per seven cases. One policy, seven cases: a demonstration of the mechanism, not a benchmark.</p>
     </section>
     <section class="research wrap" id="research" aria-labelledby="research-title">
       <div class="research-top">
