@@ -4,18 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f5f1">
-  <meta name="description" content="Autonomy needs proof. Truthbound is developing tests for reward hacking and deception in AI agents. Built on KnownLieBench research.">
+  <meta name="description" content="Truthbound compiles a written policy into an executable check, tests an AI agent on every branch of it, and enforces it at runtime. Built on KnownLieBench research.">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Truthbound — Autonomy needs proof.">
-  <meta property="og:description" content="Tests for reward hacking and deception in AI agents. Because a false success report can have real consequences.">
+  <meta property="og:title" content="Truthbound — Prove your agent follows the policy.">
+  <meta property="og:description" content="Compile the policy. Test every branch. Enforce it at runtime. See a real support agent approve a forbidden refund, and the same check stop it.">
   <meta property="og:url" content="https://franciscoliu.github.io/truthbound/">
   <meta property="og:image" content="https://franciscoliu.github.io/truthbound/assets/social.png?v=2">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://franciscoliu.github.io/truthbound/">
   <link rel="icon" href="assets/favicon.svg?v=2" type="image/svg+xml">
   <link rel="preload" href="assets/fonts/instrument-sans.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=2">
-  <title>Truthbound — Autonomy needs proof.</title>
+  <link rel="stylesheet" href="styles.css?v=3">
+  <title>Truthbound — Prove your agent follows the policy.</title>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -25,55 +25,76 @@
       Truthbound
     </a>
     <nav aria-label="Main navigation">
+      <a href="demo/">Demo</a>
       <a href="#why">Why it matters</a>
       <a href="#research">Research</a>
-      <a class="nav-contact" href="#contact">Let's talk <span aria-hidden="true">↗</span></a>
+      <a class="nav-contact" href="#contact">Talk to Frank <span aria-hidden="true">↗</span></a>
     </nav>
   </header>
   <main id="main">
     <section class="hero wrap" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> AI AGENT INTEGRITY</p>
-        <h1 id="hero-title">Autonomy<br>needs <span>proof.</span></h1>
-        <p class="hero-description">We're developing tests for reward hacking and deception in AI agents.</p>
-        <p class="hero-stakes">A false “done” can ship broken code or leave critical work unfinished.</p>
-        <a class="button" href="mailto:zheyuanliu2001@gmail.com?subject=Truthbound%20%E2%80%94%20agent%20evaluation">Discuss a workflow <span aria-hidden="true">↗</span></a>
+        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> AUTONOMY NEEDS PROOF</p>
+        <h1 id="hero-title">Prove your agent<br>follows <span>the policy.</span></h1>
+        <p class="hero-description">Truthbound compiles a written policy into an executable check, tests the agent on every branch of it, and enforces it while the agent works.</p>
+        <p class="hero-stakes">In our demo, a low-cost support agent approved a $4,986 refund the policy forbids. The same check stopped it.</p>
+        <div class="hero-actions">
+          <a class="button" href="demo/">See the demo <span aria-hidden="true">↗</span></a>
+          <a class="hero-link" href="mailto:zheyuanliu2001@gmail.com?subject=Truthbound%20%E2%80%94%20agent%20evaluation">Talk to Frank <span aria-hidden="true">↗</span></a>
+        </div>
       </div>
-      <figure class="evidence" aria-label="Illustrative mismatch between an agent report and the execution record">
+      <figure class="evidence" aria-label="From the demo: the agent approved a refund that the compiled policy says is not eligible">
         <div class="report">
-          <p class="evidence-label">Agent report</p>
-          <p class="evidence-statement">“Required checks <br>passed.”</p>
+          <p class="evidence-label">Agent, on its own</p>
+          <p class="evidence-statement">“Refund <br>approved.”</p>
+          <p class="evidence-detail">cancel_reservation · $4,986 · economy, no insurance, booked a month ago</p>
           <svg class="check-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true"><circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="1.5"/><path d="m12 20 5 5 11-11" stroke="currentColor" stroke-width="2"/></svg>
         </div>
         <div class="evidence-connector" aria-hidden="true"><span></span><svg viewBox="0 0 28 28" fill="none"><path d="m9 9 10 10M19 9 9 19" stroke="currentColor" stroke-width="2"/><circle cx="14" cy="14" r="12" stroke="currentColor"/></svg><span></span></div>
         <div class="record">
-          <p class="evidence-label">Execution record</p>
-          <p class="evidence-statement">2 required <br>checks failed.</p>
+          <p class="evidence-label">Compiled policy</p>
+          <p class="evidence-statement">Not eligible.</p>
+          <p class="evidence-detail">Unmet: not within 24 h · airline did not cancel · not business class · no insurance</p>
         </div>
-        <figcaption>Illustrative example. Same run, code and checks.</figcaption>
+        <figcaption>Real test run, low-cost model, same facts. <a href="demo/">Open the replay <span aria-hidden="true">↗</span></a></figcaption>
       </figure>
     </section>
     <section class="why" id="why" aria-labelledby="why-title">
       <div class="wrap">
         <div class="why-intro">
           <div><p class="eyebrow">WHY IT MATTERS</p><h2 id="why-title">More autonomy.<br>More at stake.</h2></div>
-          <p class="why-description">An agent's report can trigger a release, a payment or a customer decision. Teams need evidence that the work was done and the rules were followed.</p>
+          <p class="why-description">An agent's decision can trigger a refund, a release or a promise to a customer. A written policy only protects you if the agent follows it on every branch, every time, and you can show that it did.</p>
         </div>
         <div class="approach" id="approach">
-          <p>Our focus: tests before <br>a model or workflow release.</p>
-          <ol aria-label="Proposed testing approach">
-            <li><span>01</span>Test conflicting goals</li>
-            <li><span>02</span>Check the evidence</li>
-            <li><span>03</span>Test candidate fixes</li>
+          <p>What Truthbound does, before <br>and after an agent release.</p>
+          <ol aria-label="What Truthbound does">
+            <li><span>01</span>Compile the policy<small>Policy text becomes an executable oracle, checked for completeness and conflicts.</small></li>
+            <li><span>02</span>Test every branch<small>Enumerate the outcomes, generate realistic cases, grade the agent against the oracle.</small></li>
+            <li><span>03</span>Enforce at runtime<small>Block forbidden actions and reject answers that contradict the policy.</small></li>
           </ol>
         </div>
       </div>
+    </section>
+    <section class="preview wrap" id="preview" aria-labelledby="preview-title">
+      <div class="preview-top">
+        <div><p class="eyebrow">SEE IT ON A REAL POLICY</p><h2 id="preview-title">Seven outcomes. <br>Before and after.</h2></div>
+        <div class="preview-copy">
+          <p>We compiled an airline cancellation policy, generated a case for each of its seven outcomes, and ran a low-cost support agent with real tools. Every number is a replay of an archived run.</p>
+          <a class="button" href="demo/">Open the demo <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+      <dl class="stats">
+        <div><dt>Inputs enumerated → distinct outcomes</dt><dd>240 → 7</dd></div>
+        <div><dt>Same agent, unguarded → guarded</dt><dd>4/7 → 7/7</dd></div>
+        <div><dt>Refund blocked at runtime</dt><dd>$4,986</dd></div>
+      </dl>
+      <p class="preview-note">GPT-4.1 nano, three runs each way. A demonstration of the mechanism on one policy, not a benchmark.</p>
     </section>
     <section class="research wrap" id="research" aria-labelledby="research-title">
       <div class="research-top">
         <div><p class="eyebrow">THE RESEARCH BEHIND TRUTHBOUND</p><h2 id="research-title">Built on <br>KnownLieBench.</h2></div>
         <div class="research-copy">
-          <p>KnownLieBench studies misleading behavior under conflicting incentives in controlled customer-service simulations.</p>
+          <p>Policy compliance is the first release test we built. The research behind it, KnownLieBench, studies when agents misreport what they did under conflicting incentives, in controlled customer-service simulations.</p>
           <div class="research-links"><a href="https://arxiv.org/abs/2608.26372v1">Read the paper <span aria-hidden="true">↗</span></a><a href="https://github.com/franciscoliu/KnownLieBench">Explore the code <span aria-hidden="true">↗</span></a></div>
         </div>
       </div>
@@ -82,15 +103,15 @@
         <div><dt>Grounded cases</dt><dd>112</dd></div>
         <div><dt>Multi-turn interactions</dt><dd>18,144</dd></div>
       </dl>
-      <p class="founder">Founded by <a href="https://www.linkedin.com/in/zheyuan-frank-liu-371738185/">Zheyuan (Frank) Liu <span aria-hidden="true">↗</span></a>, first author of KnownLieBench.</p>
+      <p class="founder">Founded by <a href="https://www.linkedin.com/in/zheyuan-frank-liu-371738185/">Zheyuan (Frank) Liu <span aria-hidden="true">↗</span></a>, first author of KnownLieBench, and <a href="https://www.cs.columbia.edu/~weiliang/weiliang.html">Weiliang Zhao <span aria-hidden="true">↗</span></a>, PhD student in computer science at Columbia and second author.</p>
     </section>
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="wrap contact-layout">
-        <div><p class="eyebrow">LET'S BUILD TRUST IN AGENTS</p><h2 id="contact-title">Testing your next <br>agent release?</h2><p class="contact-stage">Research stage. Looking to learn from teams building agents.</p></div>
+        <div><p class="eyebrow">LET'S BUILD TRUST IN AGENTS</p><h2 id="contact-title">Testing an agent that <br>must follow written policy?</h2><p class="contact-stage">Research stage. Looking for design partners whose agents make decisions a policy governs.</p></div>
         <a class="button" href="mailto:zheyuanliu2001@gmail.com?subject=Truthbound%20%E2%80%94%20let%27s%20talk">Talk to Frank <span aria-hidden="true">↗</span></a>
       </div>
     </section>
   </main>
-  <footer class="site-footer wrap"><a class="wordmark" href="#">Truthbound</a><span>© 2026 Truthbound</span><a href="https://github.com/franciscoliu/truthbound">Source <span aria-hidden="true">↗</span></a></footer>
+  <footer class="site-footer wrap"><a class="wordmark" href="#">Truthbound</a><span>© 2026 Truthbound</span><a href="demo/">Demo <span aria-hidden="true">↗</span></a><a href="https://github.com/franciscoliu/truthbound">Source <span aria-hidden="true">↗</span></a></footer>
 </body>
 </html>
