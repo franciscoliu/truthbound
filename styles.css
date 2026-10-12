@@ -95,8 +95,6 @@ figcaption a { font-weight: 550; color: var(--ink); }
 .stats > div { display: flex; flex-direction: column-reverse; }
 .stats dd { font-size: 3.25rem; font-weight: 500; letter-spacing: -.055em; line-height: 1.2; font-variant-numeric: lining-nums; }
 .stats dt { color: var(--muted); font-size: 1rem; margin-top: 5px; }
-.founder { font-size: 1rem; line-height: 1.7; margin-top: 23px; color: var(--muted); }
-.founder a { color: var(--ink); text-decoration: underline; text-decoration-color: #b5bbae; }
 .contact { padding-block: 61px 66px; background: var(--wash); }
 .contact-layout { display: flex; align-items: center; justify-content: space-between; gap: 50px; }
 .contact .eyebrow { color: var(--muted); }
