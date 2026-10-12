@@ -94,6 +94,10 @@ nav a[aria-current="page"] { font-weight: 600; text-decoration: underline; }
 .selector { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 18px; font-size: .9375rem; }
 .selector select { font: inherit; font-size: .9375rem; padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--ink); min-height: 40px; }
 .hint { font-size: .875rem; color: var(--muted); margin-top: 12px; }
+.model-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.mchip { display: inline-flex; align-items: center; gap: 10px; padding: 6px 10px 6px 12px; border: 1px solid var(--line); background: var(--surface); border-radius: 4px; font-size: .9375rem; min-height: 40px; }
+.mchip:hover { border-color: var(--ink); }
+.mchip.active { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
 
 /* Case detail */
 .case { margin-top: 28px; border: 1px solid var(--line); background: var(--surface); }
