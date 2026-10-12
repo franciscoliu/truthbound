@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f5f1">
-  <meta name="description" content="Replay of real test runs: a low-cost support agent grants a refund the airline policy forbids. Truthbound compiles the policy, tests every branch, and enforces it at runtime.">
+  <meta name="description" content="Replay of real test runs on a simulated airline backend: a low-cost support agent issues a refund call the policy forbids. Truthbound compiles the policy for review, tests each outcome it distinguishes, and checks consequential tool calls at runtime.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Truthbound demo — Catch the refund the agent should refuse.">
   <meta property="og:description" content="Seven policy outcomes tested, then checked again with the same policy enforced at runtime. Replay of real runs.">
@@ -38,7 +38,7 @@
       <div class="hero-copy">
         <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> DEMO · REPLAY OF REAL TEST RUNS</p>
         <h1 id="hero-title">Catch the refund the agent should <span>refuse.</span></h1>
-        <p class="hero-description">One airline cancellation policy, compiled into an executable check. Seven generated cases. A low-cost support agent on its own, then the same agent with the check enforced while it works.</p>
+        <p class="hero-description">One airline cancellation policy, compiled into an executable check. Seven generated cases on a simulated airline backend. A low-cost support agent on its own, then the same agent with the check enforced while it works.</p>
         <div class="highlights" id="highlights"></div>
         <div class="hero-cta">
           <a class="button" href="#acts">Walk through the three acts <span aria-hidden="true">↓</span></a>
@@ -98,9 +98,22 @@
             <p class="small" style="margin-top:14px;color:#bfc5ba">Archived inputs, tool calls and model outputs are available on request.</p>
           </div>
         </div>
+        <div class="ledger">
+          <h3>Attempt ledger: every policy tried</h3>
+          <div class="tablewrap"><table>
+            <thead><tr><th>Policy</th><th>Backend</th><th>Compile and validate</th><th>Generated cases</th><th>Manual steps</th><th>Agent results</th></tr></thead>
+            <tbody>
+              <tr><td>Airline cancellation (tau2-bench)</td><td>Real Tau2 airline DB and tools</td><td>Passed</td><td>7 cases, all round-trip ready</td><td>One: the extracted reason list missed two values; fixed by hand, messages regenerated</td><td>This page</td></tr>
+              <tr><td>Retail order cancellation (tau2-bench)</td><td>Real Tau2 retail DB, generic adapter</td><td>Passed first try</td><td>2 cases, both ready</td><td>None</td><td>GPT-4o mini 2/2. Trivial policy</td></tr>
+              <tr><td>FMLA leave eligibility (DOL Fact Sheet #28)</td><td>None; policy-only sandbox (lookup tools return the check's facts)</td><td>Failed once (a non-total output rule), passed after the policy text was reworded to a single decision</td><td>5 outcomes; the check omitted a non-qualifying-reason branch and modelled thresholds as integers</td><td>Two: the policy rewording, and replacing the extracted user-stated fields, which had treated hours and tenure as user claims and invented contradicting values</td><td>After fixes: GPT-4o mini 5/5, GPT-4.1 nano 3/5, nano with guardrail 5/5 (2 rejections, 0 overrides)</td></tr>
+              <tr><td>Retail return and exchange (tau2-bench)</td><td>Real Tau2 retail DB, then none</td><td>Failed three times: invalid Rego on recompile; OPA evaluation error in validation; a validated check with no input for return-vs-exchange, and a manual schema patch rejected by validation</td><td>Unusable</td><td>Policy simplified once, schema patched once</td><td>None reported</td></tr>
+            </tbody>
+          </table></div>
+          <p class="small" style="margin-top:12px;color:#bfc5ba">Of four policies, the pipeline is reliable end to end only on the airline policy it was developed on. Every manual step above needed an engineer who knew the pipeline.</p>
+        </div>
         <div class="disclosures">
           <details><summary>The policy text the pipeline received</summary><pre id="policy-pre"></pre></details>
-          <details><summary>The compiled oracle (Rego, validated with OPA)</summary><pre id="rego-pre"></pre></details>
+          <details><summary>The compiled check (Rego, validated with OPA; not independently verified against the policy text)</summary><pre id="rego-pre"></pre></details>
           <details><summary>Policy facts the oracle distinguishes</summary><div class="body" id="schema-body"></div></details>
         </div>
       </div>
@@ -108,7 +121,7 @@
 
     <section class="contact" id="contact" aria-labelledby="contact-title">
       <div class="wrap contact-layout">
-        <div><p class="eyebrow">LET'S BUILD TRUST IN AGENTS</p><h2 id="contact-title">Testing an agent that <br>must follow written policy?</h2><p class="contact-stage">Research stage. Looking for design partners whose agents make decisions a policy governs.</p></div>
+        <div><p class="eyebrow">LET'S BUILD TRUST IN AGENTS</p><h2 id="contact-title">Testing an agent that <br>must follow written policy?</h2><p class="contact-stage">Research stage. Looking for two or three design partners: a support or operations agent that makes a policy-governed, high-value tool call (refunds, credits, approvals), a policy owner who can review compiled rules, and a scoped pilot.</p></div>
         <a class="button" href="mailto:zheyuanliu2001@gmail.com?subject=Truthbound%20%E2%80%94%20demo">Talk to Frank <span aria-hidden="true">↗</span></a>
       </div>
     </section>
@@ -148,9 +161,9 @@
 
     // Highlights
     $('highlights').innerHTML = [
-      ['<span>' + HERO_AMOUNT + '</span>', 'refund the policy forbids: granted by the agent alone, blocked with the guardrail'],
-      ['4/7 → <span>7/7</span>', BASE + ', unguarded (' + baseRuns.length + ' runs) → guarded (' + guardBase.length + ' runs), same seven cases'],
-      costShare != null ? ['≈<span>' + Math.round(costShare * 100) + '%</span>', 'of the cost of ' + frontierRef.join(' or ') + ' for the same seven correct answers, with the cheap model plus the guardrail'] : ['<span>240</span> → 7', 'input combinations enumerated, distinct policy outcomes found'],
+      ['<span>' + HERO_AMOUNT + '</span>', 'simulated reservation: the agent issued the refund call on its own; with the guardrail the call was blocked'],
+      ['4/7 → <span>7/7</span>', BASE + ': unguarded (' + baseRuns.length + ' runs) → final outcomes with enforcement (' + guardBase.length + ' runs; first decisions 5/7 to 6/7)'],
+      costShare != null ? ['≈<span>' + Math.round(costShare * 100) + '%</span>', 'of ' + frontierRef.join(' or ') + ' inference list price per seven cases, cheap model plus guardrail; compile run excluded'] : ['<span>240</span> → 7', 'input combinations enumerated, distinct policy outcomes found'],
     ].map(([n, l]) => '<div><div class="n">' + n + '</div><div class="l">' + esc(l) + '</div></div>').join('');
 
     // Hero evidence (one case, two archived replays)
@@ -162,11 +175,11 @@
       let agent, conn, verdict;
       if (mode === 'off') {
         const cancel = heroOff.trace.find(t => t.tool === 'cancel_reservation');
-        agent = '<div class="ev-card agent"><p class="ev-label"><span>Agent, on its own</span><span class="mono">' + esc(baseRuns[0].model_short) + '</span></p><p class="ev-statement">Refund approved.</p><p class="ev-detail mono">' + esc('cancel_reservation(' + (cancel ? cancel.args.reservation_id : '') + ')') + ' → ' + HERO_AMOUNT + '</p><p class="ev-detail">“' + esc(heroOff.reasoning) + '”</p></div>';
+        agent = '<div class="ev-card agent"><p class="ev-label"><span>Agent, on its own</span><span class="mono">' + esc(baseRuns[0].model_short) + '</span></p><p class="ev-statement">Refund call issued.</p><p class="ev-detail mono">' + esc('cancel_reservation(' + (cancel ? cancel.args.reservation_id : '') + ')') + ' → ' + HERO_AMOUNT + ' · simulated backend</p><p class="ev-detail">“' + esc(heroOff.reasoning) + '”</p></div>';
         conn = '<div class="ev-connector" aria-hidden="true"><span></span><svg viewBox="0 0 28 28" fill="none"><path d="m9 9 10 10M19 9 9 19" stroke="currentColor" stroke-width="2"/><circle cx="14" cy="14" r="12" stroke="currentColor"/></svg><span></span></div>';
         verdict = '<div class="ev-card policy"><p class="ev-label"><span>Compiled policy</span><span class="mono">OPA · ' + esc(heroCase.applied_rule) + '</span></p><p class="ev-statement">Not eligible.</p><p class="ev-detail">Unmet: ' + esc(denyList(heroCase.deny_reasons)) + '.</p></div>';
         $('hero-cap').textContent = 'Archived run, no enforcement.';
-        $('hero-fig').textContent = 'Same case, same facts, same model. The agent read the reservation (economy, no insurance, booked a month ago) and still issued the refund. Replay of run ' + baseRuns[0].label.slice(0, 2) + ', ' + D.generated_utc.slice(0, 10) + '. Not a live model call.';
+        $('hero-fig').textContent = 'Same case, same facts, same model. The agent read the reservation (economy, no insurance, booked a month ago) and still issued the cancellation-and-refund call against the simulated backend. Replay of run ' + baseRuns[0].label.slice(0, 2) + ', ' + D.generated_utc.slice(0, 10) + '. Not a live model call.';
       } else {
         const blocked = heroOn.trace.find(t => t.result && /guardrail/.test(t.result.status || ''));
         agent = '<div class="ev-card blocked"><p class="ev-label"><span>Agent tries the refund</span><span class="mono">' + esc(guardBase[0].model_short) + '</span></p><p class="ev-statement">Blocked by the policy check.</p><p class="ev-detail mono">' + esc((blocked ? blocked.tool : 'cancel_reservation') + '(' + (blocked && blocked.args.reservation_id ? blocked.args.reservation_id : '') + ')') + ' → ' + esc(blocked ? blocked.result.status : 'blocked') + '</p><p class="ev-detail">' + esc(blocked && blocked.result.message ? blocked.result.message : '') + '</p></div>';
@@ -256,14 +269,14 @@
           '<div class="act-result"><div class="big warn">3 / 7</div><div class="sub">policy outcomes with a test · agent: ' + esc(BASE) + '</div><ul>' + QA.map(id => '<li>' + esc(RULE[caseById[id].applied_rule]) + ' → refund · tested, passed</li>').join('') + '</ul></div>';
       } else if (act === 2) {
         const r = run2(); const fails = r.cases.filter(c => !c.correct);
-        h = '<h3>Compile the policy, test every outcome.</h3><p>Truthbound compiled the policy text into an executable oracle, enumerated all ' + D.n_combinations + ' input combinations into ' + D.paths.length + ' outcomes, and generated a realistic customer case with matching backend records for each. The agent ran with its real tools. ' + (r.model_short === BASE ? 'It contradicted the policy on the same three cases in ' + baseRuns.length + ' separate runs.' : 'Scores are agreement with the oracle on the same seven cases.') + '</p>' +
+        h = '<h3>Compile the policy, test each outcome it distinguishes.</h3><p>Truthbound compiled the policy text into an executable check, enumerated all ' + D.n_combinations + ' combinations of the ' + D.schema.length + ' conditions the check distinguishes into ' + D.paths.length + ' outcomes, and generated one realistic customer case with matching backend records per outcome. The agent ran with its real tools. ' + (r.model_short === BASE ? 'It contradicted the policy on the same three cases in ' + baseRuns.length + ' separate runs.' : 'Scores are agreement with the oracle on the same seven cases.') + '</p>' +
           '<div class="act-result"><div class="big ' + (fails.length ? 'warn' : 'ok') + '">' + r.n_correct + ' / ' + r.n + '</div><div class="sub">correct · ' + esc(r.model_short) + ', unguarded' + (byModel[selModel].length > 1 ? ', ' + byModel[selModel].length + ' identical runs' : '') + '</div>' +
           (fails.length ? '<ul>' + fails.map(c => '<li>Case ' + c.path_id + ', ' + esc(RULE[caseById[c.path_id].applied_rule]) + ': said <b>' + esc(c.decision) + '</b>, policy says <b>' + esc(caseById[c.path_id].decision) + '</b>. ' + esc(failKind(caseById[c.path_id].decision, c.decision)) + '.</li>').join('') + '</ul>' : '<div class="sub">Every case matched the policy.</div>') + '</div>' +
           '<div class="selector"><label for="model-sel">Agent model</label><select id="model-sel">' + models.map(m => '<option value="' + esc(m) + '"' + (m === selModel ? ' selected' : '') + '>' + esc(m) + ' · ' + byModel[m][0].n_correct + '/' + byModel[m][0].n + '</option>').join('') + '</select></div>' +
           '<div class="model-grid" aria-label="All models on the same seven cases">' + models.map(m => { const x = byModel[m][0]; return '<button type="button" class="mchip' + (m === selModel ? ' active' : '') + '" data-m="' + esc(m) + '"><span>' + esc(m) + '</span><span class="tag ' + (x.n_correct === x.n ? 'pass' : 'fail') + '">' + x.n_correct + '/' + x.n + '</span></button>'; }).join('') + '</div>';
       } else {
         const g = grun(); const inter = g.cases.filter(c => c.events.length);
-        h = '<h3>The same oracle, enforced while the agent works.</h3><p>The compiled policy runs beside the agent and reads the backend records its tools read, never a hidden label. A refund or transfer the policy forbids is blocked. An answer that contradicts the policy is rejected once with the violated rule and the unmet conditions; a second contradiction would be overridden. It never had to be.</p>' +
+        h = '<h3>The same check, enforced while the agent works.</h3><p>In this demo integration the compiled policy runs beside the agent and reads the backend records its tools read, never a hidden label. A refund or transfer call the policy forbids is blocked. A final answer that contradicts the policy is rejected once with the violated rule and the unmet conditions; a second contradiction would be overridden. It never had to be. Scores below are final outcomes after these interventions.</p>' +
           '<div class="act-result"><div class="big ok">' + g.summary.n_final_correct + ' / ' + g.summary.n_evaluated + '</div><div class="sub">correct · ' + esc(g.model_short) + ', guardrail on · ' + (g.model_short === BASE ? 'same result in all ' + guardBase.length + ' runs' : 'one run') + '</div><ul>' +
           '<li>' + g.summary.n_actions_blocked + ' forbidden action' + (g.summary.n_actions_blocked === 1 ? '' : 's') + ' blocked</li><li>' + g.summary.n_decisions_rejected + ' wrong answer' + (g.summary.n_decisions_rejected === 1 ? '' : 's') + ' rejected, ' + g.summary.n_corrected_after_feedback + ' corrected by the agent itself</li><li>' + g.summary.n_overridden + ' verdicts forced over the agent</li>' + (g.model_short === BASE && costShare != null ? '<li>Cost per seven cases: ' + money(guardCost) + ' with the guardrail, versus ' + frontierRef.map(m => money(costOf(m)) + ' for ' + m + ' alone').join(' and ') + '</li>' : '') +
           (inter.length ? '<li>Intercepted: case' + (inter.length > 1 ? 's ' : ' ') + inter.map(c => c.path_id).join(', ') + '</li>' : '') + '</ul></div>' +
@@ -329,7 +342,7 @@
     // Method
     $('method-list').innerHTML = [
       'Policy: the cancellation section of tau2-bench\'s airline policy, ' + D.policy_text.split('\n').length + ' lines, unchanged.',
-      'Compilation: ' + D.pipeline.model + ' wrote the Rego; OPA checked syntax, every declared decision has a producing rule, and all ' + D.n_combinations + ' inputs evaluate without conflict.',
+      'Compilation: ' + D.pipeline.model + ' wrote the Rego; OPA checked syntax, every declared decision has a producing rule, and all ' + D.n_combinations + ' inputs evaluate without conflict. This validates the check over its inferred schema; it does not verify fidelity to the policy text, which needs a policy owner\'s review.',
       D.n_combinations + ' inputs collapse into ' + D.paths.length + ' outcomes; one clean witness per outcome became a customer message (' + D.pipeline.projection_model.replace('openai/', '') + ') plus patched backend records, each round-trip checked against the oracle.',
       'Agent runs: policy, customer message and airline tools; temperature 0 where the model accepts it, otherwise the model default; one message per case, identical across models.',
       'Guardrail runs: same loop, oracle evaluated by OPA on facts derived from the backend records; refund and transfer calls blocked when the oracle disagrees, a contradicting answer rejected once with the rule and unmet conditions.',

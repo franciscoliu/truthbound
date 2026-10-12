@@ -148,6 +148,9 @@ nav a[aria-current="page"] { font-weight: 600; text-decoration: underline; }
 .method th { color: #bfc5ba; font-weight: 550; font-size: .8125rem; letter-spacing: .04em; text-transform: uppercase; }
 .method td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .tablewrap { overflow-x: auto; }
+.ledger { margin-top: 40px; border-top: 1px solid #444a41; padding-top: 30px; }
+.ledger h3 { color: #ffc29e; font-size: .875rem; letter-spacing: .085em; text-transform: uppercase; font-weight: 550; }
+.ledger table { font-size: .875rem; }
 .disclosures { margin-top: 40px; display: grid; gap: 10px; }
 .disclosures details { border: 1px solid #444a41; }
 .disclosures summary { cursor: pointer; padding: 14px 18px; font-weight: 550; list-style: none; display: flex; justify-content: space-between; min-height: 44px; align-items: center; }
