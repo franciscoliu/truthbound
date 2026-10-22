@@ -3,7 +3,12 @@
    Public snapshot: reads window.TB_STATIC and keeps choices in this browser only. */
 (function () {
   'use strict';
-  var STATIC = window.TB_STATIC || null;
+  var CONFIG = window.TRUTHBOUND_CONFIG || {};
+  var STATIC = CONFIG.mode === 'live' ? null : (window.TB_STATIC || null);
+  var API = String(CONFIG.apiBase || '').replace(/\/+$/, '');
+  var loadVersion = 0;
+  var saving = false;
+  var api = function (path) { return API + path; };
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -14,7 +19,8 @@
   var SRC = {
     customer: ['Customer says', 'rv-src-customer'],
     records: ['Records show', 'rv-src-records'],
-    logic: ['Derived', 'rv-src-logic']
+    logic: ['Derived', 'rv-src-logic'],
+    unresolved: ['Unresolved', 'rv-src-unresolved']
   };
   var GOOD = ['allow', 'eligible', 'on_time', 'approve', 'approved', 'yes'];
   var BAD = ['deny', 'not_eligible', 'late', 'reject', 'no'];
@@ -27,6 +33,17 @@
   var run = new URLSearchParams(location.search).get('run') || '';
   var data = null;
   var revealed = false;
+
+  function showError(message) {
+    var box = $('rv-error');
+    if (box) { box.hidden = false; box.textContent = message; }
+  }
+  function readJSON(res) {
+    return res.json().catch(function () { throw new Error('The backend returned an unreadable response.'); }).then(function (j) {
+      if (!res.ok) throw new Error(typeof j.detail === 'string' ? j.detail : 'Request failed (HTTP ' + res.status + ').');
+      return j;
+    });
+  }
 
   function storeGet(k, fallback) {
     try { var v = localStorage.getItem(k); return v == null ? fallback : JSON.parse(v); } catch (e) { return fallback; }
@@ -79,15 +96,16 @@
       runs = STATIC.runs.map(function (r) { return { name: r.name, label: r.label, sub: r.sub }; });
       return Promise.resolve(finishRuns());
     }
-    return fetch('/api/playground-runs').then(function (res) { return res.json(); }).then(function (j) {
+    return fetch(api('/api/playground-runs'), { cache: 'no-store', credentials: 'same-origin' }).then(readJSON).then(function (j) {
       runs = (j.runs || []).map(function (r) {
-        return { name: r.name, label: r.title || r.display_name || r.policy || r.name, sub: r.name + (r.n_cases ? ' · ' + r.n_cases + ' cases' : '') };
+        return { name: r.name, label: r.title || r.display_name || r.policy || r.name, mtime: r.mtime,
+          sub: r.name + (r.n_cases != null ? ' · ' + r.n_cases + ' candidate cases' : '') };
       });
       finishRuns();
     });
   }
   function finishRuns() {
-    if (!run || !runs.some(function (r) { return r.name === run; })) run = runs.length ? runs[0].name : '';
+    if (!run || (STATIC && !runs.some(function (r) { return r.name === run; }))) run = runs.length ? runs[0].name : '';
     renderPicker();
   }
 
@@ -99,7 +117,8 @@
         return '<button type="button" role="tab" aria-selected="' + (r.name === run) + '" data-run="' + esc(r.name) + '"><span>' + esc(r.label) + '</span><small>' + esc(r.sub || '') + '</small></button>';
       }).join('') + '</div>';
     } else {
-      box.innerHTML = '<label class="rv-field"><span>Run</span><select id="rv-run">' + runs.map(function (r) {
+      box.innerHTML = '<label class="rv-field"><span>Run</span><select id="rv-run">' +
+        (run && !runs.some(function (r) { return r.name === run; }) ? '<option selected value="' + esc(run) + '">' + esc(run) + ' · not in saved history</option>' : '') + runs.map(function (r) {
         return '<option value="' + esc(r.name) + '"' + (r.name === run ? ' selected' : '') + '>' + esc(r.label) + ' · ' + esc(r.sub) + '</option>';
       }).join('') + '</select></label>';
     }
@@ -117,8 +136,15 @@
   }
 
   function load() {
+    var version = ++loadVersion;
+    data = null;
+    if ($('rv-error')) $('rv-error').hidden = true;
     var box = $('rv-rules');
-    if (!run) { box.innerHTML = '<p class="rv-muted">No run selected.</p>'; return Promise.resolve(); }
+    $('rv-progress').innerHTML = '';
+    if ($('rv-run-status')) $('rv-run-status').innerHTML = '';
+    if ($('rv-policy')) $('rv-policy').textContent = '';
+    if ($('rv-callout')) { $('rv-callout').hidden = true; $('rv-callout').innerHTML = ''; }
+    if (!run) { box.innerHTML = '<p class="rv-muted">No saved runs yet. Open the current pipeline to create one.</p>'; return Promise.resolve(); }
     if (STATIC) {
       var src = STATIC.runs.filter(function (r) { return r.name === run; })[0];
       data = JSON.parse(JSON.stringify(src.payload));
@@ -128,16 +154,42 @@
       render();
       return Promise.resolve();
     }
-    box.innerHTML = '<p class="rv-muted">Loading rules. The first load of a run writes the plain-language readings and can take up to a minute.</p>';
-    return fetch('/api/runs/' + encodeURIComponent(run) + '/review').then(function (res) {
-      if (!res.ok) { box.innerHTML = '<p class="rv-muted">Could not load ' + esc(run) + ' (HTTP ' + res.status + ').</p>'; return null; }
-      return res.json();
-    }).then(function (j) {
-      if (!j) return;
+    box.innerHTML = '<p class="rv-muted">Loading saved rules and cases…</p>';
+    return fetch(api('/api/runs/' + encodeURIComponent(run) + '/review'), { cache: 'no-store', credentials: 'same-origin' }).then(readJSON).then(function (j) {
+      if (version !== loadVersion) return;
       data = j;
       data.callout = null;
       render();
+    }).catch(function (error) {
+      if (version !== loadVersion) return;
+      box.innerHTML = '<p class="rv-muted">This run could not be loaded.</p>';
+      showError(error.message + ' Refresh to try again. Archived examples are not substituted for live data.');
     });
+  }
+
+  function renderRunStatus() {
+    var box = $('rv-run-status');
+    if (!box || STATIC) return;
+    var s = data.summary || {};
+    var scored = s.n_agent_scored;
+    var agreement = typeof scored === 'number' && scored > 0 && typeof s.n_correct === 'number'
+      ? s.n_correct + ' / ' + scored + ' scored cases' : 'No scored cases';
+    function value(x) { return typeof x === 'number' ? String(x) : 'Not recorded'; }
+    var workbench = CONFIG.workbenchUrl || '/';
+    var resultUrl = api('/api/runs/' + encodeURIComponent(run) + '/result');
+    var links = '<a href="' + esc(workbench) + '">Open current pipeline</a>';
+    if (data.has_result) links += ' · <a href="' + esc(workbench + (workbench.indexOf('?') < 0 ? '?' : '&') + 'result=' + encodeURIComponent(resultUrl)) + '">Full saved report</a>';
+    var selected = runs.filter(function (r) { return r.name === run; })[0];
+    box.innerHTML = '<p><strong>Saved run: ' + esc(run) + '</strong>' + (selected && selected.mtime ? ' · ' + esc(new Date(selected.mtime * 1000).toLocaleString()) : '') + '</p>' +
+      '<dl class="rv-run-stats"><div><dt>Candidate cases</dt><dd>' + value(data.n_cases) + '</dd></div>' +
+      '<div><dt>Generated questions</dt><dd>' + value(data.n_generated_questions) + '</dd></div>' +
+      '<div><dt>Agent evaluated</dt><dd>' + value(s.n_agent_evaluated) + '</dd></div>' +
+      '<div><dt>Agent skipped</dt><dd>' + value(s.n_agent_skipped) + '</dd></div>' +
+      '<div><dt>Policy decision agreement</dt><dd>' + esc(agreement) + '</dd></div></dl>' +
+      '<p>Structural validation: <strong>' + esc(data.validation_status) + '</strong>. This does not establish fidelity to the source policy.</p>' +
+      (s.pipeline_model ? '<p>Compiler: ' + esc(s.pipeline_model) + ' · Agent configured for this run: ' + esc(s.agent_model || 'Not recorded') + '</p>' : '') +
+      (data.warnings && data.warnings.length ? '<ul class="rv-warnings">' + data.warnings.map(function (w) { return '<li>' + esc(typeof w === 'string' ? w : JSON.stringify(w)) + '</li>'; }).join('') + '</ul>' : '') +
+      '<p>' + links + '</p>';
   }
 
   function counts() {
@@ -174,8 +226,12 @@
       var tag = fs[key] === 'customer' ? '<span class="rv-src rv-src-customer rv-src-mini">customer</span>' : '';
       return '<div><dt>' + esc(factLabel(key)) + tag + '</dt><dd>' + esc(fmt(c.facts[key])) + '</dd></div>';
     }).join('');
-    var body = '<blockquote class="rv-msg">' + esc(c.message || '') + '</blockquote><dl class="rv-facts">' + facts + '</dl>' +
-      '<p class="rv-expected">Expected decision <span class="rv-decision ' + decisionClass(c.expected) + '">' + esc(human(c.expected)) + '</span></p>';
+    var body = '<blockquote class="rv-msg">' + esc(c.message || 'No natural-language question was generated for this candidate.') + '</blockquote>' +
+      (c.issues && c.issues.length ? '<ul class="rv-warnings">' + c.issues.map(function (v) { return '<li>' + esc(v) + '</li>'; }).join('') + '</ul>' : '') +
+      '<p class="rv-muted">Scenario inputs; these values alone are not proof from backend records.</p><dl class="rv-facts">' + facts + '</dl>' +
+      '<p class="rv-expected">Compiled decision <span class="rv-decision ' + decisionClass(c.expected) + '">' + esc(human(c.expected)) + '</span>' +
+      (c.eligibility ? ' · Eligibility: ' + esc(human(c.eligibility)) : '') + (c.next_step ? ' · Next step: ' + esc(human(c.next_step)) : '') + '</p>' +
+      (c.postconditions && c.postconditions.length ? '<p>Required results: ' + esc(c.postconditions.map(function (p) { return typeof p === 'string' ? p : JSON.stringify(p); }).join('; ')) + '</p>' : '');
     return k === 0 ? '<div class="rv-case">' + body + '</div>' : '<details class="rv-case"><summary>Case ' + (k + 1) + '</summary>' + body + '</details>';
   }
 
@@ -185,7 +241,7 @@
     var share = rule.share != null ? pct(rule.share) + ' of input combinations' : '';
     var conds;
     if (p && p.conditions && p.conditions.length) {
-      conds = '<p class="rv-label">' + (rule.catch_all ? 'Applies when no other rule does. Reasons it reports' : 'Applies when all of these hold') + '</p><ul class="rv-conds">' +
+      conds = '<p class="rv-label">' + esc(p.conditions_label || (rule.catch_all ? 'Applies when no other rule does. Reasons it reports' : 'Applies when all of these hold')) + '</p><ul class="rv-conds">' +
         p.conditions.map(function (c) {
           var s = SRC[c.source] || SRC.logic;
           return '<li' + (c.unexplained ? ' class="rv-unexplained"' : '') + '><span class="rv-src ' + s[1] + '">' + s[0] + '</span><span>' + esc(c.text) +
@@ -197,14 +253,20 @@
     var flagged = data.callout && revealed && data.callout.rule === rule.rule;
     var finding = flagged ? '<div class="rv-finding"><p class="rv-label">What the policy owner should catch</p><p>' + esc(data.callout.answer) + '</p></div>' : '';
     var cases = (rule.cases || []).map(caseHTML).join('');
+    var fieldList = (rule.fields || []).map(function (f) {
+      var source = SRC[f.source] || SRC.unresolved;
+      return '<li><span class="rv-src ' + source[1] + '">' + source[0] + '</span> ' + esc(human(f.name)) +
+        (f.db_path ? ' <small>Mapping: ' + esc(f.db_path) + '</small>' : '') + '</li>';
+    }).join('');
     var rv = rule.review || {};
     return '<article class="rv-card rv-st-' + st + (flagged ? ' rv-flagged' : '') + '" id="rv-rule-' + esc(rule.rule) + '" data-rule="' + esc(rule.rule) + '">' +
       '<header class="rv-card-h"><div><p class="rv-kicker">Rule ' + (i + 1) + ' of ' + data.rules.length + (share ? ' · ' + share : '') + '</p><h3>' + esc(human(rule.rule)) + '</h3></div>' +
       '<div class="rv-tags"><span class="rv-decision ' + decisionClass(rule.decision) + '">' + esc(human(rule.decision)) + '</span><span class="rv-status rv-status-' + st + '">' + esc(STATUS[st] || st) + '</span></div></header>' +
       (p && p.summary ? '<p class="rv-summary">' + esc(p.summary) + '</p>' : '') + finding +
       '<div class="rv-when">' + conds + '</div>' +
-      '<details class="rv-rego"><summary>Compiled rule</summary><pre>' + esc((rule.rego || []).join('\n\n') || '(no block found)') + '</pre></details>' +
-      '<div class="rv-cases"><p class="rv-label">Generated test cases for this rule</p>' + cases + '</div>' +
+      (fieldList ? '<details class="rv-fields"><summary>Input sources to verify</summary><p class="rv-muted">These are pipeline mappings, not independent verification of the facts.</p><ul>' + fieldList + '</ul></details>' : '') +
+      '<details class="rv-rego"><summary>' + (rule.rego_scope === 'full_policy' ? 'Full compiled policy' : 'Compiled rule') + '</summary><pre>' + esc((rule.rego || []).join('\n\n') || '(no block found)') + '</pre></details>' +
+      '<div class="rv-cases"><p class="rv-label">Saved candidate cases for this rule</p>' + (cases || '<p class="rv-muted">No saved case for this rule.</p>') + '</div>' +
       '<div class="rv-ctl"><label class="rv-label" for="rv-note-' + i + '">Your review</label>' +
       '<textarea id="rv-note-' + i + '" data-note rows="2" placeholder="If a condition is wrong or missing, say what the policy actually requires and quote the clause.">' + esc(rv.note || '') + '</textarea>' +
       '<div class="rv-actions"><button type="button" class="rv-btn rv-btn-ok" data-act="approved">Approve rule</button>' +
@@ -218,8 +280,9 @@
     var pol = $('rv-policy');
     if (pol) pol.innerHTML = md(data.policy_text || '(no policy text)');
     renderProgress();
+    renderRunStatus();
     renderCallout();
-    $('rv-rules').innerHTML = data.rules.map(cardHTML).join('');
+    $('rv-rules').innerHTML = data.rules.length ? data.rules.map(cardHTML).join('') : '<p class="rv-muted">This run has no compiled rules to review yet.</p>';
   }
 
   function replaceCard(name) {
@@ -247,7 +310,7 @@
     }
     if (ev.target.closest('#rv-export')) { exportJSON(); return; }
     var b = ev.target.closest('[data-act]');
-    if (!b || !data) return;
+    if (!b || !data || saving) return;
     var card = b.closest('[data-rule]');
     var name = card.getAttribute('data-rule');
     var rule = data.rules.filter(function (r) { return r.rule === name; })[0];
@@ -264,19 +327,26 @@
       renderProgress();
       return;
     }
+    saving = true;
+    var savedRun = run, savedData = data;
     b.disabled = true;
-    fetch('/api/runs/' + encodeURIComponent(run) + '/review', {
+    fetch(api('/api/runs/' + encodeURIComponent(savedRun) + '/review'), {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rule: name, status: status, note: note, reviewer: reviewer })
-    }).then(function (res) {
-      b.disabled = false;
-      if (!res.ok) { alert('Save failed: HTTP ' + res.status); return null; }
-      return res.json();
-    }).then(function (j) {
-      if (!j) return;
+      credentials: 'same-origin',
+      body: JSON.stringify({ rule: name, status: status, note: note, reviewer: reviewer,
+        fingerprint: savedData.fingerprint, revision: savedData.review_revision })
+    }).then(readJSON).then(function (j) {
+      if (run !== savedRun || data !== savedData) return;
       rule.review = j.review;
+      data.review_revision = j.revision;
       replaceCard(name);
       renderProgress();
+      if ($('rv-error')) $('rv-error').hidden = true;
+    }).catch(function (error) {
+      if (run !== savedRun || data !== savedData) return;
+      showError('Review was not saved: ' + error.message);
+    }).finally(function () {
+      saving = false; b.disabled = false;
     });
   });
   document.addEventListener('change', function (ev) {
@@ -287,6 +357,8 @@
     if (!data) return;
     var out = {
       run: data.run, exported_utc: new Date().toISOString(),
+      fingerprint: data.fingerprint || null, revision: data.review_revision || 0,
+      scope: data.review_scope || 'Browser-only review of an archived snapshot',
       rules: data.rules.map(function (r) { return { rule: r.rule, decision: r.decision, share: r.share, review: r.review }; })
     };
     var blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
@@ -301,5 +373,20 @@
   var det = $('rv-policy-details');
   if (det && window.innerWidth < 640) det.open = false;
 
-  listRuns().then(load);
+  if (!STATIC) {
+    $('rv-title').innerHTML = 'Review compiled rules <span>against the source policy.</span>';
+    document.querySelector('.rv-lede').textContent = 'Compare saved rules and candidate cases with the original policy. Check each condition and its declared source, then record your review. Results below belong to the saved run; approvals do not rerun tests or enable runtime enforcement.';
+    var steps = document.querySelectorAll('.rv-steps li');
+    steps[0].querySelector('span').textContent = 'Open a saved compilation from the current pipeline.';
+    steps[1].querySelector('span').textContent = 'Compare the rules and cases with the policy; save your findings.';
+    steps[2].querySelector('b').textContent = '3 · Follow up';
+    steps[2].querySelector('span').textContent = 'Use the review to correct the policy implementation, then run new tests in the workbench.';
+    document.querySelector('.rv-legend').innerHTML = '<span><span class="rv-src rv-src-customer">Customer says</span> mapped to user evidence</span><span><span class="rv-src rv-src-records">Records show</span> mapped to system records; verify the lookup</span><span><span class="rv-src rv-src-logic">Derived</span> compiled expression</span><span><span class="rv-src rv-src-unresolved">Unresolved</span> no usable fact mapping</span>';
+    var note = document.querySelector('.rv-note');
+    if (note) note.textContent = 'Connected to the current pipeline. Cases and results are saved run artifacts; opening this page makes no model calls. Readings mechanically preserve the compiled expressions. Reviews are saved on the server for this exact snapshot; they do not change scores or automatically enable enforcement.';
+  }
+  listRuns().then(load).catch(function (error) {
+    $('rv-rules').innerHTML = '<p class="rv-muted">Unable to connect to the run history.</p>';
+    showError(error.message + ' Check the configured backend address and refresh.');
+  });
 })();

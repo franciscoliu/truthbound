@@ -359,5 +359,7 @@
     $('schema-body').innerHTML = '<table><thead><tr><th>Fact</th><th>Type</th><th>Values</th></tr></thead><tbody>' + D.schema.map(s => '<tr><td class="mono">' + esc(s.field) + '</td><td>' + esc(s.type) + '</td><td>' + esc(s.values.join(', ')) + '</td></tr>').join('') + '</tbody></table>';
   })();
   </script>
+  <script src="../runtime-config.js"></script>
+  <script src="../connection.js"></script>
 </body>
 </html>
